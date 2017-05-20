@@ -25,15 +25,37 @@
 %%
 
 program: expression program
-	|TYPE identifiers ';' program
+	|declaration ';' program
 	;
+
+declaration: TYPE identifiers
+	|KEY_CONST TYPE const_identifiers
+	;
+
 identifiers: identifier
 	|identifier ',' identifiers
 	;
+
 identifier:
 	ID
 	|ID '=' expression
+	|ID arr_brackets
+	|ID arr_brackets '=' '{' expression '}'
 	;
+
+arr_brackets: '[' INTEGER ']'
+	|'[' INTEGER ']'  arr_brackets
+	;
+
+const_identifiers: const_identifier
+	|const_identifier ',' const_identifiers
+	;
+
+const_identifier:ID '=' expression
+	;
+
+
+
 expression: expression OP_LOR expression
 	|expression OP_LAND expression
 	|expression OP_CMP expression
