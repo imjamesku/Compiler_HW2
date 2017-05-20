@@ -29,6 +29,15 @@
 program: declaration ';' program
 	|function_declaration '{' compound_statement '}' program
 	|statement ';' program
+	|if_else_statement program
+	|for_statement program
+	;
+if_else_statement: KEY_IF '(' expression ')' '{' compound_statement '}' KEY_ELSE '{' compound_statement '}'
+	| KEY_IF '(' expression ')' '{' compound_statement '}'
+	;
+for_statement: KEY_FOR '(' optionalExpression ';' optionalExpression ';' optionalExpression ')' '{' compound_statement '}'
+	;
+optionalExpression: expression
 	|
 	;
 compound_statement: declarations statements
@@ -43,8 +52,13 @@ statements: over1Statements
 	|
 	;
 
-over1Statements: statement ';'
-	| statement ';' over1Statements
+over1Statements: allKindsOfStatements
+	| allKindsOfStatements over1Statements
+	;
+
+allKindsOfStatements: statement ';'
+	| if_else_statement
+	| for_statement
 	;
 
 statement: ID '=' expression
