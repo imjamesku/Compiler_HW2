@@ -26,13 +26,18 @@
 
 program: expression program
 	|declaration ';' program
+	|function_declaration '{' program '}' program
+	|
 	;
 
 declaration: TYPE identifiers
 	|KEY_CONST TYPE const_identifiers
-	|TYPE ID '(' parameters ')'
-	|TYPE_VOID '(' parameters ')'
+	|function_declaration
 	;
+function_declaration: TYPE ID '(' parameters ')'
+	|TYPE_VOID ID '(' parameters ')'
+	;
+
 parameters: TYPE ID
 	| TYPE ID arr_brackets
 	| TYPE ID ',' parameters
