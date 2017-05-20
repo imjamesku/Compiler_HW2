@@ -11,7 +11,9 @@
 %left OP_CMP
 %left '+' '-'
 %left '*' '/' '%'
+%nonassoc SIGN_PRECEDENCE
 %left OP_INCREMENT OP_DECREMENT
+%nonassoc ARR_IDX
 %left '[' ']'
 
 %{
@@ -24,12 +26,35 @@
 
 %%
 
-program: expression program
-	|declaration ';' program
-	|function_declaration '{' program '}' program
+program: declaration ';' program
+	|function_declaration '{' compound_statement '}' program
+	|statement ';' program
+	|
+	;
+compound_statement: declarations statements
+	;
+declarations: over1Declarations
+	|
+	;
+over1Declarations: declaration ';'
+	| declaration ';' over1Declarations
+	;
+statements: over1Statements
 	|
 	;
 
+over1Statements: statement ';'
+	| statement ';' over1Statements
+	;
+
+statement: ID '=' expression
+	| ID arr_indices '=' expression
+	| ID '(' expressions  ')'
+	| ID '(' ')'
+	;
+arr_indices: '[' expression ']'
+	| '[' expression ']' arr_indices
+	;
 declaration: TYPE identifiers
 	|KEY_CONST TYPE const_identifiers
 	|function_declaration
@@ -38,10 +63,13 @@ function_declaration: TYPE ID '(' parameters ')'
 	|TYPE_VOID ID '(' parameters ')'
 	;
 
-parameters: TYPE ID
-	| TYPE ID arr_brackets
-	| TYPE ID ',' parameters
+parameters: parameters_over1
 	|
+	;
+parameters_over1:TYPE ID arr_brackets ',' parameters_over1
+	| TYPE ID ',' parameters_over1
+	| TYPE ID arr_brackets
+	| TYPE ID
 	;
 
 identifiers: identifier
@@ -88,6 +116,12 @@ expression: expression OP_LOR expression
 	|ID
 	|STRING
 	|CONSTANT
+	|'(' expression ')'
+	|'+' expression %prec SIGN_PRECEDENCE
+	|'-' expression %prec SIGN_PRECEDENCE
+	|ID '(' expressions ')'
+	|ID '(' ')'
+	|ID arr_indices %prec ARR_IDX
 	;
 %%
 
