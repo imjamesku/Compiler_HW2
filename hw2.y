@@ -30,6 +30,13 @@ program: expression program
 
 declaration: TYPE identifiers
 	|KEY_CONST TYPE const_identifiers
+	|TYPE ID '(' parameters ')'
+	|TYPE_VOID '(' parameters ')'
+	;
+parameters: TYPE ID
+	| TYPE ID arr_brackets
+	| TYPE ID ',' parameters
+	|
 	;
 
 identifiers: identifier
@@ -40,7 +47,7 @@ identifier:
 	ID
 	|ID '=' expression
 	|ID arr_brackets
-	|ID arr_brackets '=' '{' expression '}'
+	|ID arr_brackets '=' '{' expressions '}'
 	;
 
 arr_brackets: '[' INTEGER ']'
@@ -54,7 +61,9 @@ const_identifiers: const_identifier
 const_identifier:ID '=' expression
 	;
 
-
+expressions: expression
+	|expression ',' expressions
+	;
 
 expression: expression OP_LOR expression
 	|expression OP_LAND expression
@@ -73,6 +82,7 @@ expression: expression OP_LOR expression
 	|CHAR
 	|ID
 	|STRING
+	|CONSTANT
 	;
 %%
 
