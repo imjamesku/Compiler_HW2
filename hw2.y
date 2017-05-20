@@ -31,11 +31,15 @@ program: declaration ';' program
 	|statement ';' program
 	|if_else_statement program
 	|for_statement program
+	|while_statemnt
 	;
 if_else_statement: KEY_IF '(' expression ')' '{' compound_statement '}' KEY_ELSE '{' compound_statement '}'
 	| KEY_IF '(' expression ')' '{' compound_statement '}'
 	;
 for_statement: KEY_FOR '(' optionalExpression ';' optionalExpression ';' optionalExpression ')' '{' compound_statement '}'
+	;
+while_statemnt: KEY_WHILE '(' expression ')' '{' compound_statement '}'
+	| KEY_DO '{' compound_statement '}' KEY_WHILE '(' expression ')' ';'
 	;
 optionalExpression: expression
 	|
@@ -59,12 +63,16 @@ over1Statements: allKindsOfStatements
 allKindsOfStatements: statement ';'
 	| if_else_statement
 	| for_statement
+	| while_statemnt
 	;
 
 statement: ID '=' expression
 	| ID arr_indices '=' expression
 	| ID '(' expressions  ')'
 	| ID '(' ')'
+	| KEY_BREAK
+	| KEY_CONTINUE
+	| KEY_RETURN expression
 	;
 arr_indices: '[' expression ']'
 	| '[' expression ']' arr_indices
