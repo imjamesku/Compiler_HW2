@@ -31,7 +31,7 @@ program: declaration ';' program
 	|statement ';' program
 	|if_else_statement program
 	|for_statement program
-	|while_statemnt
+	|while_statemnt program
 	;
 if_else_statement: KEY_IF '(' expression ')' '{' compound_statement '}' KEY_ELSE '{' compound_statement '}'
 	| KEY_IF '(' expression ')' '{' compound_statement '}'
@@ -49,8 +49,8 @@ compound_statement: declarations statements
 declarations: over1Declarations
 	|
 	;
-over1Declarations: declaration ';'
-	| declaration ';' over1Declarations
+over1Declarations: declaration_except_function ';'
+	| declaration_except_function ';' over1Declarations
 	;
 statements: over1Statements
 	|
@@ -81,6 +81,10 @@ declaration: TYPE identifiers
 	|KEY_CONST TYPE const_identifiers
 	|function_declaration
 	;
+declaration_except_function:TYPE identifiers
+	|KEY_CONST TYPE const_identifiers
+	;
+
 function_declaration: TYPE ID '(' parameters ')'
 	|TYPE_VOID ID '(' parameters ')'
 	;
@@ -129,8 +133,8 @@ expression: expression OP_LOR expression
 	|expression '*' expression
 	|expression '/' expression
 	|expression '%' expression
-	|expression OP_INCREMENT
-	|expression OP_DECREMENT
+	|ID OP_INCREMENT
+	|ID OP_DECREMENT
 	|INTEGER
 	|DOUBLE
 	|SCI_NOTATION
