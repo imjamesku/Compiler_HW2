@@ -32,6 +32,7 @@ program: declaration ';' program
 	|if_else_statement program
 	|for_statement program
 	|while_statemnt program
+	|switch_statement program
 	;
 if_else_statement: KEY_IF '(' expression ')' '{' compound_statement '}' KEY_ELSE '{' compound_statement '}'
 	| KEY_IF '(' expression ')' '{' compound_statement '}'
@@ -40,6 +41,20 @@ for_statement: KEY_FOR '(' optionalExpression ';' optionalExpression ';' optiona
 	;
 while_statemnt: KEY_WHILE '(' expression ')' '{' compound_statement '}'
 	| KEY_DO '{' compound_statement '}' KEY_WHILE '(' expression ')' ';'
+	;
+switch_statement: KEY_SWITCH '(' ID ')' '{' cases defaultCase '}'
+	;
+cases:KEY_CASE caseConstant ':' compound_statement
+	|KEY_CASE caseConstant ':' compound_statement cases
+	;
+caseConstant:CONSTANT
+	|INTEGER
+	|DOUBLE
+	|SCI_NOTATION
+	|CHAR
+	;
+defaultCase: KEY_DEFAULT ':' compound_statement
+	|
 	;
 optionalExpression: expression
 	|
@@ -64,6 +79,7 @@ allKindsOfStatements: statement ';'
 	| if_else_statement
 	| for_statement
 	| while_statemnt
+	| switch_statement
 	;
 
 statement: ID '=' expression
@@ -73,6 +89,8 @@ statement: ID '=' expression
 	| KEY_BREAK
 	| KEY_CONTINUE
 	| KEY_RETURN expression
+	| ID OP_INCREMENT
+	| ID OP_DECREMENT
 	;
 arr_indices: '[' expression ']'
 	| '[' expression ']' arr_indices
