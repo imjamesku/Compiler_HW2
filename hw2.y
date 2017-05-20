@@ -25,6 +25,14 @@
 %%
 
 program: expression program
+	|TYPE identifiers ';' program
+	;
+identifiers: identifier
+	|identifier ',' identifiers
+	;
+identifier:
+	ID
+	|ID '=' expression
 	;
 expression: expression OP_LOR expression
 	|expression OP_LAND expression

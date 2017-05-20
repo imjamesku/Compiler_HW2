@@ -1,6 +1,7 @@
 %{
 #include <stdio.h>
 #include <string.h>
+#include "y.tab.h"
 #define MAX_STR_CONST 2048
 int num_lines = 1, char_counter;
 int source_on = 1, token_on = 1;
@@ -105,6 +106,7 @@ char *line_buf_ptr = line_buf;
 		if(token_on)
 			printf("#string:%s\n", string_buf);
 		BEGIN(INITIAL);
+		return STRING;
 	}
 	\\\"	{
 		*string_buf_ptr++ = '\\';
@@ -133,6 +135,7 @@ char *line_buf_ptr = line_buf;
 		BEGIN(INITIAL);
 		strcpy(line_buf_ptr, yytext);
 		line_buf_ptr += strlen(yytext);
+		return CHAR;
 	}
 	[ -~]	{
 		if(char_counter > 0){	
@@ -198,18 +201,158 @@ char *line_buf_ptr = line_buf;
 		printf("#key:%s\n", yytext);
 	strcpy(line_buf_ptr, yytext);
 	line_buf_ptr += strlen(yytext);
+	if(strcmp(yytext, "void") == 0)
+		return TYPE_VOID;
+	else if(strcmp(yytext, "int") == 0)
+		return TYPE;
+	else if(strcmp(yytext, "double") == 0)
+		return TYPE;
+	else if(strcmp(yytext, "bool") == 0)
+		return TYPE;
+	else if(strcmp(yytext, "char") == 0)
+		return TYPE;
+	else if(strcmp(yytext, "null") == 0)
+		return CONSTANT;
+	else if(strcmp(yytext, "for") == 0)
+		return KEY_FOR;
+	else if(strcmp(yytext, "while") == 0)
+		return KEY_WHILE;
+	else if(strcmp(yytext, "do") == 0)
+		return KEY_DO;
+	else if(strcmp(yytext, "if") == 0)
+		return KEY_IF;
+	else if(strcmp(yytext, "else") == 0)
+		return KEY_ELSE;
+	else if(strcmp(yytext, "switch") == 0)
+		return KEY_SWITCH;
+	else if(strcmp(yytext, "return") == 0)
+		return KEY_RETURN;
+	else if(strcmp(yytext, "break") == 0)
+		return KEY_BREAK;
+	else if(strcmp(yytext, "continue") == 0)
+		return KEY_CONTINUE;
+	else if(strcmp(yytext, "const") == 0)
+		return KEY_CONST;
+	else if(strcmp(yytext, "true") == 0)
+		return CONSTANT;
+	else if(strcmp(yytext, "false") == 0)
+		return CONSTANT;
+	else if(strcmp(yytext, "struct") == 0)
+		return KEY_STRUCT;
+	else if(strcmp(yytext, "case") == 0)
+		return KEY_CASE;
+	else if(strcmp(yytext, "default") == 0)
+		return KEY_DEFAULT;
+	else
+		return ID;
+	/*else if(strcmp(yytext, "fclose") == 0)
+		return ID;
+	else if(strcmp(yytext, "clearerr") == 0)
+		return ID;
+	else if(strcmp(yytext, "feof") == 0)
+		return ID;
+	else if(strcmp(yytext, "ferror") == 0)
+		return ID;
+	else if(strcmp(yytext, "fflush") == 0)
+		return ID;
+	else if(strcmp(yytext, "fgetpos") == 0)
+		return ID;
+	else if(strcmp(yytext, "fopen") == 0)
+		return ID;
+	else if(strcmp(yytext, "fread") == 0)
+		return ID;
+	else if(strcmp(yytext, "freopen") == 0)
+		return ID;
+	else if(strcmp(yytext, "fseek") == 0)
+		return ID;
+	else if(strcmp(yytext, "fsetpos") == 0)
+		return ID;
+	else if(strcmp(yytext, "ftell") == 0)
+		return ID;
+	else if(strcmp(yytext, "fwrite") == 0)
+		return ID;
+	else if(strcmp(yytext, "remove") == 0)
+		return ID;
+	else if(strcmp(yytext, "rename") == 0)
+		return ID;
+	else if(strcmp(yytext, "rewind") == 0)
+		return ID;
+	else if(strcmp(yytext, "setbuf") == 0)
+		return ID;
+	else if(strcmp(yytext, "tmpfile") == 0)
+		return ID;
+	else if(strcmp(yytext, "tmpnam") == 0)
+		return ID;
+	else if(strcmp(yytext, "fprintf") == 0)
+		return ID;
+	else if(strcmp(yytext, "printf") == 0)
+		return ID;
+	else if(strcmp(yytext, "sprintf") == 0)
+		return ID;
+	else if(strcmp(yytext, "vfprintf") == 0)
+		return ID;
+	else if(strcmp(yytext, "vprintf") == 0)
+		return ID;
+	else if(strcmp(yytext, "vsprintf") == 0)
+		return ID;
+	else if(strcmp(yytext, "fscanf") == 0)
+		return ID;
+	else if(strcmp(yytext, "fscanf") == 0)
+		return ID;
+	else if(strcmp(yytext, "scanf") == 0)
+		return ID;
+	else if(strcmp(yytext, "sscanf") == 0)
+		return ID;
+	else if(strcmp(yytext, "fgetc") == 0)
+		return ID;
+	else if(strcmp(yytext, "fgets") == 0)
+		return ID;
+	else if(strcmp(yytext, "fputc") == 0)
+		return ID;
+	else if(strcmp(yytext, "fputs") == 0)
+		return ID;
+	else if(strcmp(yytext, "getc") == 0)
+		return ID;
+	else if(strcmp(yytext, "fscanf") == 0)
+		return ID;*/
 }
 ":"|";"|","|"."|"("|")"|"["|"]"|"{"|"}"	{
+/*punctuation*/
 	if(token_on)
 		printf("#punc:%s\n", yytext);
 	strcpy(line_buf_ptr, yytext);
 	line_buf_ptr += strlen(yytext);
+	return yytext[0];
 }
 "+"|"-"|"*"|"/"|"%"|"++"|"--"|"<"|"<="|">"|">"|">="|"=="|"!="|"="|"&&"|"||"|"!"|"*"|"&"	{
+/*operators*/
 	if(token_on)
 		printf("#op:%s\n", yytext);
 	strcpy(line_buf_ptr, yytext);
 	line_buf_ptr += strlen(yytext);
+	if(strcmp(yytext, "++") == 0)
+		return OP_INCREMENT;
+	else if(strcmp(yytext, "--") == 0)
+		return OP_DECREMENT;
+	else if(strcmp(yytext, "<") == 0)
+		return OP_CMP;
+	else if(strcmp(yytext, "<=") == 0)
+		return OP_CMP;
+	else if(strcmp(yytext, ">") == 0)
+		return OP_CMP;
+	else if(strcmp(yytext, ">=") == 0)
+		return OP_CMP;
+	else if(strcmp(yytext, "==") == 0)
+		return OP_CMP;
+	else if(strcmp(yytext, "!=") == 0)
+		return OP_CMP;
+	else if(strcmp(yytext, "&&") == 0)
+		return OP_LAND;
+	else if(strcmp(yytext, "||") == 0)
+		return OP_LOR;
+	else
+		return yytext[0];
+	
 }
 ([0-9]*\.[0-9]+)|([0-9]+\.[0-9]*)/[^0-9a-zA-Z_]	{
 /*doubles*/
@@ -217,6 +360,7 @@ char *line_buf_ptr = line_buf;
 		printf("#double:%s\n", yytext);
 	strcpy(line_buf_ptr, yytext);
 	line_buf_ptr += strlen(yytext);
+	return DOUBLE;
 }
 ([1-9][0-9]*|0)/[^0-9a-zA-Z_\.]	{
 /*Integers*/
@@ -224,6 +368,8 @@ char *line_buf_ptr = line_buf;
 		printf("#integer:%s\n", yytext);
 	strcpy(line_buf_ptr, yytext);
 	line_buf_ptr += strlen(yytext);
+	//yylval.intValue = atoi(yytext);
+	return INTEGER;
 }
 
 (([0-9]+)|([0-9]+\.[0-9]*)|([0-9]*\.[0-9]+))[eE][+-]?[0-9]+/[^\.0-9a-zA-Z_]	{
@@ -232,6 +378,7 @@ char *line_buf_ptr = line_buf;
 		printf("#sci:%s\n", yytext);
 	strcpy(line_buf_ptr, yytext);
 	line_buf_ptr += strlen(yytext);
+	return SCI_NOTATION;
 }
 [a-zA-Z_][a-zA-Z0-9_]*/[^a-zA-Z_0-9]	{
 /*identifiers*/
@@ -239,6 +386,7 @@ char *line_buf_ptr = line_buf;
 		printf("#id:%s\n", yytext);
 	strcpy(line_buf_ptr, yytext);
 	line_buf_ptr += strlen(yytext);
+	return ID;
 }
 #error
 .	{
@@ -246,15 +394,9 @@ char *line_buf_ptr = line_buf;
 	exit(1);
 }
 %%
-int main(int argc, char* argv[]){
-	//printf("arc = %d\n", argc);
-	//printf("arcv[0] = %s\n", argv[0]);
-	/*if(argc > 0)
-		yyin = fopen(argv[0], "r");
-	else
-		yyin = stdin;*/
+/*int main(int argc, char* argv[]){
 	yylex();
 	//printf("#num_lines = %d\n", num_lines);
 	return 0;
-}
+}*/
 
