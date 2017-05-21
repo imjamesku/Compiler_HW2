@@ -128,6 +128,7 @@ identifier:
 	|ID '=' expression
 	|ID arr_brackets
 	|ID arr_brackets '=' '{' expressions '}'
+	|ID arr_brackets '=' '{' '}'
 	;
 
 arr_brackets: '[' INTEGER ']'
