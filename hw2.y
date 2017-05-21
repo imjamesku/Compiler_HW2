@@ -22,6 +22,9 @@
 	void yyerror(char *s);
 	int yylex(void);
 	int sym[26];
+	extern int num_lines;
+	extern char line_buf[];
+	extern char yytext[];
 %}
 
 %%
@@ -169,8 +172,12 @@ expression: expression OP_LOR expression
 	;
 %%
 
-void yyerror(char *s){
-	fprintf(stderr, "%s\n", s);
+void yyerror(char *msg){
+	fprintf( stderr, "*** Error at line %d: %s\n", num_lines, line_buf );
+	fprintf( stderr, "\n" );	
+	fprintf( stderr, "Unmatched token: %s\n", yytext );
+	fprintf( stderr, "*** syntax error\n");
+//	exit(-1);
 }
 
 int main(void){
